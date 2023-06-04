@@ -28,6 +28,18 @@ public class QueryDispatcherTests
         });
     }
 
+    [Fact]
+    public async Task Dispatching_cancellable_query_resolves_handler_based_on_command_type()
+    {
+        var cancellationTokenSource = new CancellationTokenSource(100);
+
+        var action = () => _queryDispatcher.Dispatch(new CancellableQuery(), cancellationTokenSource.Token);
+
+        await action
+            .Should()
+            .ThrowAsync<OperationCanceledException>();
+    }
+
     public record GetAllProducts : IQuery<IEnumerable<GetAllProducts.ProductListItem>>
     {
         public record ProductListItem(string Name);
@@ -39,6 +51,21 @@ public class QueryDispatcherTests
                 new ProductListItem("A"),
                 new ProductListItem("B")
             }.AsEnumerable());
+        }
+    }
+
+    public record CancellableQuery : IQuery<int>
+    {
+        public record CancellableCommandHandler : IQueryCancellableHandler<CancellableQuery, int>
+        {
+            public Task<int> Handle(CancellableQuery query, CancellationToken token)
+            {
+                while (true)
+                {
+                    Task.Delay(50, token);
+                    token.ThrowIfCancellationRequested();
+                }
+            }
         }
     }
 }

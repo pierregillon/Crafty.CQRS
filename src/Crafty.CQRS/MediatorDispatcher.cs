@@ -10,12 +10,12 @@ internal class MediatorDispatcher : ICommandDispatcher, IQueryDispatcher
 
     public MediatorDispatcher(IMediator mediator) => _mediator = mediator;
 
-    public Task Dispatch<TCommand>(TCommand command) where TCommand : ICommand => _mediator.Send(command);
-
-    public Task Dispatch<TCommand>(TCommand command, CancellationToken token) where TCommand : ICommand =>
+    public Task Dispatch<TCommand>(TCommand command, CancellationToken token = default) where TCommand : ICommand =>
         _mediator.Send(command, token);
 
-    public Task<TResult> Dispatch<TResult>(ICommand<TResult> command) => _mediator.Send(command);
+    public Task<TResult> Dispatch<TResult>(ICommand<TResult> command, CancellationToken token = default) =>
+        _mediator.Send(command, token);
 
-    public Task<TResult> Dispatch<TResult>(IQuery<TResult> query) => _mediator.Send(query);
+    public Task<TResult> Dispatch<TResult>(IQuery<TResult> query, CancellationToken token = default) =>
+        _mediator.Send(query, token);
 }
