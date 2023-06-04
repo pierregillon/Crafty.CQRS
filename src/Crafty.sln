@@ -7,6 +7,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Global", "Global", "{C12533
 		..\readme.md = ..\readme.md
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crafty.CQRS.Tests", "Crafty.CQRS.Tests\Crafty.CQRS.Tests.csproj", "{A7FB28CA-C272-4821-9B19-023396D9B727}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -17,5 +19,9 @@ Global
 		{10F1EAA5-C43E-4C62-8CFB-29FA85F6900C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{10F1EAA5-C43E-4C62-8CFB-29FA85F6900C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{10F1EAA5-C43E-4C62-8CFB-29FA85F6900C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A7FB28CA-C272-4821-9B19-023396D9B727}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A7FB28CA-C272-4821-9B19-023396D9B727}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A7FB28CA-C272-4821-9B19-023396D9B727}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A7FB28CA-C272-4821-9B19-023396D9B727}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
