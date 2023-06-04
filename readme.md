@@ -26,6 +26,13 @@ All is about **readability** 😌.
 
 ## Show me code, no talk.
 
+### Dependency injection
+
+```csharp
+services
+    .AddCqrs(options => options.RegisterServicesFromAssemblyContaining<XXX>())
+```
+
 ### Command dispatching
 
 ```csharp
