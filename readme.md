@@ -1,5 +1,8 @@
 # Crafty.CQRS
 
+![Status](https://github.com/pierregillon/Crafty.CQRS/actions/workflows/dotnet.yml/badge.svg)
+![Version](https://img.shields.io/badge/dynamic/xml?color=blue&label=version&prefix=v&query=//Project/PropertyGroup/Version/text()&url=https://raw.githubusercontent.com/pierregillon/Crafty.CQRS/main/src/Crafty.CQRS/Crafty.CQRS.csproj)
+
 A simple library to dispatch command and query to appropriate handlers.
 
 ## Schema
