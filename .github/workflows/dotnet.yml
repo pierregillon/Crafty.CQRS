@@ -20,13 +20,13 @@ jobs:
         run: dotnet restore
       - name: Build
         working-directory: src
-        run: dotnet build --no-restore
+        run: dotnet build --no-restore --configuration Release
       - name: Test
         working-directory: src
-        run: dotnet test --no-restore --no-build --verbosity normal
+        run: dotnet test --no-build --verbosity normal --configuration Release
       - name: Pack
         working-directory: src
-        run: dotnet pack -o out
+        run: dotnet pack -o out --no-build --configuration Release
       - name: Push nuget
         working-directory: src
-        run: dotnet nuget push out/Crafty.CQRS.nupkg --api-key ${{ env.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
+        run: dotnet nuget push ./out/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
