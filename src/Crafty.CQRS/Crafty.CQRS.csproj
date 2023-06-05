@@ -4,7 +4,7 @@
         <TargetFramework>netstandard2.1</TargetFramework>
         <Nullable>enable</Nullable>
         <LangVersion>latest</LangVersion>
-        <Version>1.0</Version>
+        <Version>1.1</Version>
         <Title>Crafty CQRS</Title>
         <Description>A crafty library to dispatch command and query to appropriate handlers. Syntactical sugar on top of MediatR.</Description>
         <PackageTags>cqrs query command mediator</PackageTags>
