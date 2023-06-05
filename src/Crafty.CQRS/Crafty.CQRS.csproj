@@ -11,4 +11,17 @@
       <PackageReference Include="MediatR" Version="12.0.1" />
     </ItemGroup>
 
+    <PropertyGroup>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PackageLicenseFile>LICENSE</PackageLicenseFile>
+        <PackageProjectUrl>https://github.com/pierregillon/Crafty.CQRS</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/pierregillon/Crafty.CQRS</RepositoryUrl>
+        <Authors>Pierre GILLON</Authors>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <None Include="../../README.md" Pack="true" PackagePath=""/>
+        <None Include="../../LICENSE" Pack="true" PackagePath=""/>
+    </ItemGroup>
+
 </Project>
