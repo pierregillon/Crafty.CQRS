@@ -12,7 +12,8 @@ public class CommandDecoratorTests : TestBase
     private static IServiceCollection ConfigureServices(IServiceCollection services)
     {
         services
-            .DecorateCommand<RegisterUser, RegisterUser.Decorator>();
+            .DecorateCommand<RegisterUser, RegisterUser.Decorator>()
+            .DecorateAllCommands(typeof(LogCommandExecution<>));
 
         return services;
     }
@@ -24,9 +25,17 @@ public class CommandDecoratorTests : TestBase
 
         await CommandDispatcher.Dispatch(registerUser);
 
-        StateTracker.IsDecorationStarted.Should().BeTrue();
-        StateTracker.IsDecorationEnded.Should().BeTrue();
-        StateTracker.DecoratedCommand.Should().Be(registerUser);
+        StateTracker.SpecificDecoratedCommand.Should().Be(registerUser);
+    }
+
+    [Fact]
+    public async Task All_commands_can_be_decorated_with_generic_decorator()
+    {
+        var registerUser = new RegisterUser();
+
+        await CommandDispatcher.Dispatch(registerUser);
+
+        StateTracker.GenericDecoratedCommand.Should().Be(registerUser);
     }
 
     public record RegisterUser : ICommand
@@ -40,11 +49,14 @@ public class CommandDecoratorTests : TestBase
         {
             public async Task Decorate(RegisterUser command, CommandHandlerDelegate innerHandler)
             {
-                Tracker.DecoratedCommand = command;
-                Tracker.IsDecorationStarted = true;
+                Tracker.SpecificDecoratedCommand = command;
                 await innerHandler();
-                Tracker.IsDecorationEnded = true;
             }
         }
+    }
+
+    public class LogCommandExecution<TCommand> : ICommandDecorator<TCommand> where TCommand : ICommand
+    {
+        public Task Decorate(TCommand command, CommandHandlerDelegate innerHandler) => Task.CompletedTask;
     }
 }
