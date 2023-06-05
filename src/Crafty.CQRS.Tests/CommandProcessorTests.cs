@@ -1,4 +1,5 @@
 using FluentAssertions;
+using MediatR;
 
 namespace Crafty.CQRS.Tests;
 
