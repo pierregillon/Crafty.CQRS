@@ -2,8 +2,15 @@
 
 ![Status](https://github.com/pierregillon/Crafty.CQRS/actions/workflows/dotnet.yml/badge.svg)
 ![Version](https://img.shields.io/badge/dynamic/xml?color=blue&label=version&prefix=v&query=//Project/PropertyGroup/Version/text()&url=https://raw.githubusercontent.com/pierregillon/Crafty.CQRS/main/src/Crafty.CQRS/Crafty.CQRS.csproj)
+![Nuget](https://img.shields.io/badge/Nuget-available%20-green)
 
 A simple and crafty library to dispatch command and query to appropriate handlers.
+
+## Installation
+
+[Nuget package](https://www.nuget.org/packages/Crafty.CQRS):
+
+    dotnet add package Crafty.CQRS
 
 ## Only a syntactical sugar on top of the [MediatR library](https://github.com/jbogard/MediatR)
 
@@ -22,8 +29,9 @@ All is about **readability** 😌.
 
 - **align the language**: stop using the "request" keyword when you are doing CQRS
 - **everything is based on interfaces** (thanks to default implementation in interface) : 
-  - you prefer a record for you command and your handler? Please do it, you have no limitation.
-  - you want to implement multiple handling in a single class? please do it. 
+  - you prefer a record for your command and your handler?
+  - you want to implement multiple handling in a single class?
+  - => do it.
 - **simplify**: remove `CancellationToken` from `Handle()` method.
   - most of process cannot be cancelled (or we don't want to implement a cancellation process).
 - **simplify bis**: hide the `Unit.Value` concept of MediatR
@@ -46,7 +54,7 @@ flowchart TB
     
 ```
 
-## Show me code, no talk.
+## Show me the code, no talk.
 
 ### Installation
 
@@ -125,7 +133,7 @@ public record ListAllRegisteredUsersQueryHandler : IQueryHandler<ListAllRegister
 }
 ```
 
-## And ... cancellation?
+## And ... what about cancellation?
 
 In certain case, if you want to access the `CancellationToken` in an handler, 
 you can implement `ICommandCancellableHandler` or `IQueryCancellableHandler`, that add the token as a second parameter.
@@ -143,7 +151,7 @@ public record RegisterUserCommandHandler : ICommandCancellableHandler<RegisterUs
 
 ## Using processors
 
-You can implement `ICommandPreProcessor` and `ICommandPostProcessor` to interact before and after the `ICommandHandler`.
+You can also implement `ICommandPreProcessor` and `ICommandPostProcessor` to interact before and after the `ICommandHandler`.
 The same can be achieved for queries.
 
 ```mermaid
@@ -169,3 +177,21 @@ flowchart TB
     class QPre,QPost optionalQuery;
     
 ```
+
+## What about decorating handlers? Like IPipelineBehaviour<,>
+
+As this library is built on top `MediatR`, you can directly use `IPipelineBehaviour<,>` to create decorators for your command and queries.
+
+```csharp
+public class LogAllRequests<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : notnull
+{
+    public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
+    {
+        Console.WriteLine("some log");
+        return await next();
+    }
+}
+```
+
+For now, there is no override like `ICommandDecorator<>` because of IoC limitation (OpenGeneric declaration on type définition).
+
