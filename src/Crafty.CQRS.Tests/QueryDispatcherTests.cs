@@ -3,23 +3,12 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Crafty.CQRS.Tests;
 
-public class QueryDispatcherTests
+public class QueryDispatcherTests : TestBase
 {
-    private readonly IQueryDispatcher _queryDispatcher;
-
-    public QueryDispatcherTests()
-    {
-        var serviceProvider = new ServiceCollection()
-            .AddCqrs(options => options.RegisterServicesFromAssemblyContaining<QueryDispatcherTests>())
-            .BuildServiceProvider();
-
-        _queryDispatcher = serviceProvider.GetRequiredService<IQueryDispatcher>();
-    }
-
     [Fact]
     public async Task Dispatching_query_resolves_handler_based_on_query_type()
     {
-        var results = await _queryDispatcher.Dispatch(new GetAllProducts());
+        var results = await QueryDispatcher.Dispatch(new GetAllProducts());
 
         results.Should().BeEquivalentTo(new[]
         {
@@ -33,7 +22,7 @@ public class QueryDispatcherTests
     {
         var cancellationTokenSource = new CancellationTokenSource(100);
 
-        var action = () => _queryDispatcher.Dispatch(new CancellableQuery(), cancellationTokenSource.Token);
+        var action = () => QueryDispatcher.Dispatch(new CancellableQuery(), cancellationTokenSource.Token);
 
         await action
             .Should()

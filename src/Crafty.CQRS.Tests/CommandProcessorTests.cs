@@ -1,32 +1,17 @@
 using FluentAssertions;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Crafty.CQRS.Tests;
 
-public class CommandProcessorTests
+public class CommandProcessorTests : TestBase
 {
-    private readonly ICommandDispatcher _commandDispatcher;
-    private readonly StateTracker _stateTracker;
-
-    public CommandProcessorTests()
-    {
-        var serviceProvider = new ServiceCollection()
-            .AddCqrs(options => options.RegisterServicesFromAssemblyContaining<CommandProcessorTests>())
-            .AddSingleton<StateTracker>()
-            .BuildServiceProvider();
-
-        _commandDispatcher = serviceProvider.GetRequiredService<ICommandDispatcher>();
-        _stateTracker = serviceProvider.GetRequiredService<StateTracker>();
-    }
-    
     [Fact]
     public async Task Command_is_correctly_preprocessed()
     {
         var command = new RegisterUser();
         
-        await _commandDispatcher.Dispatch(command);
+        await CommandDispatcher.Dispatch(command);
 
-        _stateTracker.CommandPreProcessed.Should().Be(command);
+        StateTracker.PreProcessed.Should().Be(command);
     }
     
     [Fact]
@@ -34,9 +19,9 @@ public class CommandProcessorTests
     {
         var command = new RegisterUser();
         
-        await _commandDispatcher.Dispatch(command);
+        await CommandDispatcher.Dispatch(command);
 
-        _stateTracker.CommandPostProcessed.Should().Be(command);
+        StateTracker.PostProcessed.Should().Be(command);
     }
     
     [Fact]
@@ -44,9 +29,9 @@ public class CommandProcessorTests
     {
         var command = new RegisterUserWithResult();
         
-        _ = await _commandDispatcher.Dispatch(command);
+        _ = await CommandDispatcher.Dispatch(command);
 
-        _stateTracker.CommandPreProcessed.Should().Be(command);
+        StateTracker.PreProcessed.Should().Be(command);
     }
     
     [Fact]
@@ -54,9 +39,9 @@ public class CommandProcessorTests
     {
         var command = new RegisterUserWithResult();
         
-        _ = await _commandDispatcher.Dispatch(command);
+        _ = await CommandDispatcher.Dispatch(command);
 
-        _stateTracker.CommandPostProcessed.Should().Be(command);
+        StateTracker.PostProcessed.Should().Be(command);
     }
     
     [Fact]
@@ -64,16 +49,9 @@ public class CommandProcessorTests
     {
         var command = new RegisterUserWithResult();
         
-        var result = await _commandDispatcher.Dispatch(command);
+        var result = await CommandDispatcher.Dispatch(command);
 
-        _stateTracker.ResultFromPostProcessed.Should().Be(result);
-    }
-
-    public record StateTracker
-    {
-        public object? CommandPreProcessed { get; set; }
-        public object? CommandPostProcessed { get; set; }
-        public object? ResultFromPostProcessed { get; set; }
+        StateTracker.PostProcessResult.Should().Be(result);
     }
 
     public record RegisterUser : ICommand
@@ -87,13 +65,13 @@ public class CommandProcessorTests
         {
             public Task PreProcess(RegisterUser command)
             {
-                Tracker.CommandPreProcessed = command;
+                Tracker.PreProcessed = command;
                 return Task.CompletedTask;
             }
 
             public Task PostProcess(RegisterUser command)
             {
-                Tracker.CommandPostProcessed = command;
+                Tracker.PostProcessed = command;
                 return Task.CompletedTask;
             }
         }
@@ -110,14 +88,14 @@ public class CommandProcessorTests
         {
             public Task PreProcess(RegisterUserWithResult command)
             {
-                Tracker.CommandPreProcessed = command;
+                Tracker.PreProcessed = command;
                 return Task.CompletedTask;
             }
 
             public Task PostProcess(RegisterUserWithResult command, Guid guid)
             {
-                Tracker.CommandPostProcessed = command;
-                Tracker.ResultFromPostProcessed = guid;
+                Tracker.PostProcessed = command;
+                Tracker.PostProcessResult = guid;
                 return Task.CompletedTask;
             }
         }

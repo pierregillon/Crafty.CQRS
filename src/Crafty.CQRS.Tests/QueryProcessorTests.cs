@@ -3,30 +3,16 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Crafty.CQRS.Tests;
 
-public class QueryProcessorTests
+public class QueryProcessorTests : TestBase
 {
-    private readonly IQueryDispatcher _queryDispatcher;
-    private readonly StateTracker _stateTracker;
-
-    public QueryProcessorTests()
-    {
-        var serviceProvider = new ServiceCollection()
-            .AddCqrs(options => options.RegisterServicesFromAssemblyContaining<QueryProcessorTests>())
-            .AddSingleton<StateTracker>()
-            .BuildServiceProvider();
-
-        _queryDispatcher = serviceProvider.GetRequiredService<IQueryDispatcher>();
-        _stateTracker = serviceProvider.GetRequiredService<StateTracker>();
-    }
-    
     [Fact]
     public async Task Query_is_correctly_preprocessed()
     {
         var query = new GetUserDetails();
         
-        _ = await _queryDispatcher.Dispatch(query);
+        _ = await QueryDispatcher.Dispatch(query);
 
-        _stateTracker.PreProcessedQuery.Should().Be(query);
+        StateTracker.PreProcessed.Should().Be(query);
     }
     
     [Fact]
@@ -34,9 +20,9 @@ public class QueryProcessorTests
     {
         var query = new GetUserDetails();
         
-        _ = await _queryDispatcher.Dispatch(query);
+        _ = await QueryDispatcher.Dispatch(query);
 
-        _stateTracker.PostProcessedQuery.Should().Be(query);
+        StateTracker.PostProcessed.Should().Be(query);
     }
     
     [Fact]
@@ -44,16 +30,9 @@ public class QueryProcessorTests
     {
         var query = new GetUserDetails();
         
-        var result = await _queryDispatcher.Dispatch(query);
+        var result = await QueryDispatcher.Dispatch(query);
 
-        _stateTracker.PostProcessResult.Should().Be(result);
-    }
-
-    public record StateTracker
-    {
-        public object? PreProcessedQuery { get; set; }
-        public object? PostProcessedQuery { get; set; }
-        public object? PostProcessResult { get; set; }
+        StateTracker.PostProcessResult.Should().Be(result);
     }
 
     public record GetUserDetails : IQuery<GetUserDetails.UserDetails>
@@ -69,13 +48,13 @@ public class QueryProcessorTests
         {
             public Task PreProcess(GetUserDetails command)
             {
-                Tracker.PreProcessedQuery = command;
+                Tracker.PreProcessed = command;
                 return Task.CompletedTask;
             }
 
             public Task PostProcess(GetUserDetails command, UserDetails result)
             {
-                Tracker.PostProcessedQuery = command;
+                Tracker.PostProcessed = command;
                 Tracker.PostProcessResult = result;
                 return Task.CompletedTask;
             }

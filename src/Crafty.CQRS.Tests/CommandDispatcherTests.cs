@@ -1,27 +1,15 @@
 using FluentAssertions;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Crafty.CQRS.Tests;
 
-public class CommandDispatcherTests
+public class CommandDispatcherTests : TestBase
 {
-    private readonly ICommandDispatcher _commandDispatcher;
-
-    public CommandDispatcherTests()
-    {
-        var serviceProvider = new ServiceCollection()
-            .AddCqrs(options => options.RegisterServicesFromAssemblyContaining<CommandDispatcherTests>())
-            .BuildServiceProvider();
-
-        _commandDispatcher = serviceProvider.GetRequiredService<ICommandDispatcher>();
-    }
-
     [Fact]
     public async Task Dispatching_command_resolves_handler_based_on_command_type()
     {
         var command = new CreateProduct();
 
-        await _commandDispatcher.Dispatch(command);
+        await CommandDispatcher.Dispatch(command);
 
         command.IsHandled.Should().BeTrue();
     }
@@ -29,7 +17,7 @@ public class CommandDispatcherTests
     [Fact]
     public async Task Dispatching_command_with_result_resolves_handler_based_on_command_type()
     {
-        var userId = await _commandDispatcher.Dispatch(new RegisterUser());
+        var userId = await CommandDispatcher.Dispatch(new RegisterUser());
 
         userId.Should().NotBeEmpty();
     }
@@ -39,7 +27,7 @@ public class CommandDispatcherTests
     {
         var cancellationTokenSource = new CancellationTokenSource(100);
 
-        var action = () => _commandDispatcher.Dispatch(new CancellableCommand(), cancellationTokenSource.Token);
+        var action = () => CommandDispatcher.Dispatch(new CancellableCommand(), cancellationTokenSource.Token);
 
         await action
             .Should()
