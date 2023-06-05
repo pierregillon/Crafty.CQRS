@@ -1,6 +1,15 @@
-# Crafty CQRS
+# Crafty.CQRS
 
 A simple library to dispatch command and query to appropriate handlers.
+
+## Schema
+
+```mermaid
+flowchart LR
+    A[ICommandDispatcher] -->|dispatches| B
+    B[ICommand] -->|handled by a single| C
+    C[ICommandHandler<>]
+```
 
 ## Only an abstraction of the [MediatR library](https://github.com/jbogard/MediatR)
 
@@ -20,25 +29,35 @@ All is about **readability** 😌.
 - **align the language**: stop using the "request" keyword when you are doing CQRS
 - **everything is based on interfaces** (thanks to default implementation in interface) : 
   - you prefer a record for you command and your handler? Please do it, you have no limitation.
-  - you want to implement multiple handling in a s~~~~ingle class? please do it. 
+  - you want to implement multiple handling in a single class? please do it. 
 - **simplify**: remove `CancellationToken` from `Handle()` method.
   - most of process cannot be cancelled (or we don't want to implement a cancellation process).
+- **simplify bis**: hide the `Unit.Value` concept of MediatR
 
 ## Show me code, no talk.
 
-### Dependency injection
+### Installation
 
 ```csharp
 services
     .AddCqrs(options => options.RegisterServicesFromAssemblyContaining<XXX>())
 ```
 
-### Command dispatching
+### Command dispatching from api controller
 
 ```csharp
-ICommandDispatcher commandDispatcher = ...
-
-await commandDispatcher.Dispatch(new RegisterUserCommand());
+public class UserController : ControllerBase
+{
+    private ICommandDispatcher _commandDispatcher;
+    
+    public UserController(ICommandDispatcher commandDispatcher) => _commandDispatcher = commandDispatcher;
+  
+    [HttpPost]
+    public async Task<IActionResult> RegisterUser()
+    {
+        await _commandDispatcher.Dispatch(new RegisterUserCommand());
+    }
+}
 ```
 
 The command :
@@ -58,12 +77,23 @@ public record RegisterUserCommandHandler : ICommandHandler<RegisterUserCommand>
 }
 ```
 
-### Query dispatching
+### Query dispatching from api controller
 
 ```csharp
-IQueryDispatcher queryDispatcher = ...
-
-await queryDispatcher.Dispatch(new ListAllRegisteredUsersQuery());
+public class UserController : ControllerBase
+{
+    private IQueryDispatcher _queryDispatcher;
+    
+    public UserController(IQueryDispatcher queryDispatcher) => _queryDispatcher = queryDispatcher;
+  
+    [HttpPost]
+    public async Task<IActionResult> ListAllRegisteredUsers()
+    {
+        var users = await _queryDispatcher.Dispatch(new ListAllRegisteredUsersQuery());
+        
+        return Ok(users);
+    }
+}
 ```
 
 The query :
@@ -85,7 +115,7 @@ public record ListAllRegisteredUsersQueryHandler : IQueryHandler<ListAllRegister
 
 ## And ... cancellation?
 
-In certain case, if you want to access the CancellationToken in an handler, 
+In certain case, if you want to access the `CancellationToken` in an handler, 
 you can implement `ICommandCancellableHandler` or `IQueryCancellableHandler`, that add the token as a second parameter.
 
 ```csharp
