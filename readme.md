@@ -14,7 +14,7 @@ flowchart LR
     C[ICommandHandler<>]
 ```
 
-## Only an abstraction of the [MediatR library](https://github.com/jbogard/MediatR)
+## Only a syntactical sugar on top of the [MediatR library](https://github.com/jbogard/MediatR)
 
 One of the main aspect of **Domain Driven Design**, is to align the language with the domain we want to model.
 
