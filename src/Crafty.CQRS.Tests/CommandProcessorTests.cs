@@ -3,15 +3,15 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Crafty.CQRS.Tests;
 
-public class CommandBehaviourTests
+public class CommandProcessorTests
 {
     private readonly ICommandDispatcher _commandDispatcher;
     private readonly StateTracker _stateTracker;
 
-    public CommandBehaviourTests()
+    public CommandProcessorTests()
     {
         var serviceProvider = new ServiceCollection()
-            .AddCqrs(options => options.RegisterServicesFromAssemblyContaining<CommandBehaviourTests>())
+            .AddCqrs(options => options.RegisterServicesFromAssemblyContaining<CommandProcessorTests>())
             .AddSingleton<StateTracker>()
             .BuildServiceProvider();
 
