@@ -5,6 +5,9 @@
         <Nullable>enable</Nullable>
         <LangVersion>latest</LangVersion>
         <Version>1.0</Version>
+        <Title>Crafty CQRS</Title>
+        <Description>A crafty library to dispatch command and query to appropriate handlers. Syntactical sugar on top of MediatR.</Description>
+        <PackageTags>cqrs query command mediator</PackageTags>
     </PropertyGroup>
 
     <ItemGroup>
@@ -20,8 +23,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <None Include="../../README.md" Pack="true" PackagePath=""/>
-        <None Include="../../LICENSE" Pack="true" PackagePath=""/>
+        <None Include="../../README.md" Pack="true" PackagePath="" />
+        <None Include="../../LICENSE" Pack="true" PackagePath="" />
     </ItemGroup>
 
 </Project>
