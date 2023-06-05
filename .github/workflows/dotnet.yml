@@ -24,3 +24,9 @@ jobs:
       - name: Test
         working-directory: src
         run: dotnet test --no-restore --no-build --verbosity normal
+      - name: Pack
+        working-directory: src
+        run: dotnet pack -o out
+      - name: Push nuget
+        working-directory: src
+        run: dotnet nuget push out/Crafty.CQRS.nupkg --api-key ${{ env.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
