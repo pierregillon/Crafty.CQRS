@@ -3,16 +3,7 @@
 ![Status](https://github.com/pierregillon/Crafty.CQRS/actions/workflows/dotnet.yml/badge.svg)
 ![Version](https://img.shields.io/badge/dynamic/xml?color=blue&label=version&prefix=v&query=//Project/PropertyGroup/Version/text()&url=https://raw.githubusercontent.com/pierregillon/Crafty.CQRS/main/src/Crafty.CQRS/Crafty.CQRS.csproj)
 
-A simple library to dispatch command and query to appropriate handlers.
-
-## Schema
-
-```mermaid
-flowchart LR
-    A[ICommandDispatcher] -->|dispatches| B
-    B[ICommand] -->|handled by a single| C
-    C[ICommandHandler<>]
-```
+A simple and crafty library to dispatch command and query to appropriate handlers.
 
 ## Only a syntactical sugar on top of the [MediatR library](https://github.com/jbogard/MediatR)
 
@@ -36,6 +27,24 @@ All is about **readability** 😌.
 - **simplify**: remove `CancellationToken` from `Handle()` method.
   - most of process cannot be cancelled (or we don't want to implement a cancellation process).
 - **simplify bis**: hide the `Unit.Value` concept of MediatR
+
+## Schema of the 2 flows
+
+```mermaid
+flowchart TB
+    classDef query fill:#DFFFE3
+
+    CD[ICommandDispatcher] -->|dispatches| C
+    C[ICommand] -.->|handled by a single| CH
+    CH[ICommandHandler<>]
+
+    QD[IQueryDispatcher] -->|dispatches| Q
+    Q[IQuery<>] -.->|handled by a single| QH
+    QH[IQueryHandler<>]
+
+    class QD,Q,QH query;
+    
+```
 
 ## Show me code, no talk.
 
@@ -130,4 +139,33 @@ public record RegisterUserCommandHandler : ICommandCancellableHandler<RegisterUs
         ...
     }
 }
+```
+
+## Using processors
+
+You can implement `ICommandPreProcessor` and `ICommandPostProcessor` to interact before and after the `ICommandHandler`.
+The same can be achieved for queries.
+
+```mermaid
+flowchart TB
+    classDef optionalCommand stroke-dasharray: 2 2
+    classDef query fill:#DFFFE3
+    classDef optionalQuery fill:#DFFFE3,stroke-dasharray: 2 2
+
+    CD[ICommandDispatcher] -->|dispatches| C
+    C[ICommand] -.->|is preprocessed| CPre
+    CPre[ICommandPreProcessor<>] -->|handled by a single| CH
+    CH[ICommandHandler<>] -.->|is post processed| CPost
+    CPost[ICommandPostProcessor<>]
+
+    QD[IQueryDispatcher] -->|dispatches| Q
+    Q[IQuery<>] -.->|is preprocessed| QPre
+    QPre[IQueryPreProcessor<>] -->|handled by a single| QH
+    QH[IQueryHandler<>] -.->|is post processed| QPost
+    QPost[IQueryPostProcessor<>]
+
+    class CPre,CPost optionalCommand;
+    class QD,Q,QPre,QH,QPost query;
+    class QPre,QPost optionalQuery;
+    
 ```
