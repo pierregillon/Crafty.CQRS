@@ -5,6 +5,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Global", "Global", "{C125331B-CC8A-4B40-BF87-DE133B4929F1}"
 	ProjectSection(SolutionItems) = preProject
 		..\readme.md = ..\readme.md
+		..\.github\workflows\dotnet.yml = ..\.github\workflows\dotnet.yml
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crafty.CQRS.Tests", "Crafty.CQRS.Tests\Crafty.CQRS.Tests.csproj", "{A7FB28CA-C272-4821-9B19-023396D9B727}"
